@@ -1,42 +1,108 @@
-import java.util.Arrays;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
-public class Griglia {
-    private static final int RIGHE = 7;
-    private static final int COLONNE = 7;
-    private boolean[][] cellule;
-    public Griglia(GenerazioneIniziale generazioneIniziale) {
-        cellule = new boolean[RIGHE][COLONNE];
-        this.generazioneIniziale(generazioneIniziale,RIGHE /2,COLONNE /2);
+public class Griglia extends JFrame implements KeyListener {
+    public static final int FRAME_WIDTH = 800;
+    public static final int FRAME_HEIGHT = 600;
+    public static final int RIGHE = 43;
+    public static final int COLONNE = 43;
+    private Cellula[][] cellule = new Cellula[RIGHE][COLONNE];
+    private final MenuConfigurazioni menuConfigurazioni;
+    public Griglia(Configurazione configurazione) {
+        super("The Game of Life");
+        setSize(FRAME_WIDTH,FRAME_HEIGHT);
+        setLocationRelativeTo(null);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Imposta un layout a BorderLayout per la finestra principale
+        setLayout(new BorderLayout());
+
+        // Crea la griglia e aggiungila al centro della finestra
+        JPanel gridPanel = new JPanel();
+        gridPanel.setLayout(new GridLayout(RIGHE, COLONNE));
+
+        // Aggiungi i componenti della griglia al pannello della griglia
+        for (int i = 0; i < RIGHE; i++) {
+            for (int j = 0; j < COLONNE; j++) {
+                cellule[i][j] = new Cellula(this);
+                cellule[i][j].setPreferredSize(new Dimension(FRAME_WIDTH /COLONNE,FRAME_HEIGHT /RIGHE));
+                gridPanel.add(cellule[i][j]);
+                // pack();
+            }
+        }
+        add(gridPanel, BorderLayout.CENTER);
+
+        menuConfigurazioni = new MenuConfigurazioni();
+        add(menuConfigurazioni, BorderLayout.EAST);
+
+        this.generaConfigurazione(configurazione,RIGHE /2,COLONNE /2);
+
+        this.addKeyListener(this);
+        this.setFocusable(true);
+        this.requestFocusInWindow(true);
+
+
+        setVisible(true);
     }
 
-    private void generazioneIniziale(GenerazioneIniziale generazioneIniziale, int riga, int colonna) {
+    public void generaConfigurazione(Configurazione configurazione, int riga, int colonna) {
         if (riga < 0 || riga >= RIGHE || colonna < 0 || colonna >= COLONNE) return;
 
         int i2 = 0;
         int j2 = 0;
-        for (int i = riga; i < riga +generazioneIniziale.getRighe(); i++) {
-            for (int j = colonna; j < colonna +generazioneIniziale.getColonne(); j++) {
-                cellule[i][j] = generazioneIniziale.getElemento(i2, j2++);
+        for (int i = riga; i < riga + configurazione.getRighe(); i++) {
+            for (int j = colonna; j < colonna + configurazione.getColonne(); j++) {
+                cellule[i][j].setStato(configurazione.getElemento(i2, j2++));
             }
             i2++;
             j2 = 0;
         }
+        repaint();
+    }
+
+    public void generaConfigurazione(JButton cellula, Configurazione configurazione) {
+        if (cellula == null) return;
+        int riga = 0;
+        int colonna = 0;
+
+        // individua cellula
+        for (int i = 0; i < RIGHE; i++) {
+            for (int j = 0; j < COLONNE; j++) {
+                if (cellule[i][j] == cellula) {
+                    riga = i;
+                    colonna = j;
+                    break;
+                }
+            }
+        }
+        generaConfigurazione(configurazione, riga, colonna);
     }
 
     public void prossimaGenerazione() {
-        boolean[][] nuoveCellule = new boolean[RIGHE][COLONNE];
+        Cellula[][] nuoveCellule = new Cellula[RIGHE][COLONNE];
+
         for (int i = 0; i < RIGHE; i++) {
             for (int j = 0; j < COLONNE; j++) {
-
+                nuoveCellule[i][j] = new Cellula(this);
             }
         }
 
         for (int i = 0; i < RIGHE; i++) {
             for (int j = 0; j < COLONNE; j++) {
-                nuoveCellule[i][j] = calcolaProssimaGenerazioneCellula(i, j);
+                nuoveCellule[i][j].setStato(calcolaProssimaGenerazioneCellula(i, j));
             }
         }
-        cellule = nuoveCellule;
+
+        for (int i = 0; i < RIGHE; i++) {
+            for (int j = 0; j < COLONNE; j++) {
+                cellule[i][j].setStato(nuoveCellule[i][j].getStato());
+            }
+        }
+        // cellule = nuoveCellule; non è possibile per via di swing
+
+        repaint();
     }
     public boolean calcolaProssimaGenerazioneCellula(final int riga, final int colonna) {
         int celluleVive = 0;
@@ -50,7 +116,7 @@ public class Griglia {
                 int colonnaCorrente =
                         colonna +j < 0 ? COLONNE -1 :
                                 colonna +j >= COLONNE ? 0 : colonna +j;
-                if (cellule[rigaCorrente][colonnaCorrente]) celluleVive++;
+                if (cellule[rigaCorrente][colonnaCorrente].getStato()) celluleVive++;
             }
 
         }
@@ -60,28 +126,59 @@ public class Griglia {
         // sovrappopolazione    - piú di 3 celle vive adiacenti, morte
         // riproduzione         - esattamente 3 cellule vive adiacenti, nascita
 
-        if (cellule[riga][colonna]) {
+        boolean prossimoStato = false;
+        if (cellule[riga][colonna].getStato()) {
             celluleVive--; // tolgo dal conteggio la cellula stessa
-            if (celluleVive < 2) return false;    // isolamento
-            if (celluleVive == 2 || celluleVive == 3) return true;       // sopravvivenza
-            return false;    // sovrappopolazione
+            if (celluleVive < 2) prossimoStato = false;    // isolamento
+            else if (celluleVive == 2 || celluleVive == 3) prossimoStato = true;       // sopravvivenza
+            else prossimoStato = false;    // sovrappopolazione
         } else {
-            if (celluleVive == 3) return true;    // riproduzione
+            if (celluleVive == 3) prossimoStato = true;    // riproduzione
         }
-        return false;
+        return prossimoStato;
     }
 
+    public MenuConfigurazioni getMenuConfigurazioni() {
+        return this.menuConfigurazioni;
+    }
 
     @Override
     public String toString() {
         String s = "";
         for (int i = 0; i < RIGHE; i++) {
             for (int j = 0; j < COLONNE; j++) {
-                s += cellule[i][j] ? 1 : " ";
+                s += cellule[i][j].getStato() ? 1 : " ";
             }
             s += "\n";
         }
         return s;
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        //keyTyped = Invoked when a key is typed. Uses KeyChar, char output
+        switch(e.getKeyChar()) {
+            case 'd': {      // next generation
+                prossimaGenerazione();
+            }
+            break;
+
+            case 'a': {      // former generation DA FARE
+                prossimaGenerazione();
+            }
+            break;
+        }
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        //keyPressed = Invoked when a physical key is pressed down. Uses KeyCode, int output
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        //keyReleased = called whenever a button is released
     }
 
 }
