@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) {
 
         Configurazione configurazione = Configurazione.BLINKER;
-        Griglia grigliaTest = new Griglia(configurazione);
+        Griglia grigliaTest = new Griglia(null);
 
     }
 }

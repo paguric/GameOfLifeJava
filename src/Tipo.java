@@ -1,5 +1,5 @@
 public enum Tipo {
-    STILL_LIFE, OSCILLATOR, SPACESHIP;
+    STILL_LIFE, OSCILLATOR, SPACESHIP, GUN;
     @Override
     public String toString() {
         String name = name().toLowerCase().replace('_', ' ');

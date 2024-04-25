@@ -2,11 +2,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Griglia extends JFrame implements KeyListener {
-    public static final int FRAME_WIDTH = 800;
-    public static final int FRAME_HEIGHT = 600;
-    public static final int RIGHE = 43;
-    public static final int COLONNE = 43;
+public class Griglia extends JFrame implements KeyListener, MouseListener {
+    public static final int FRAME_WIDTH = 1200;
+    public static final int FRAME_HEIGHT = 800;
+    public static final int RIGHE = 77;
+    public static final int COLONNE = 77;
     private Cellula[][] cellule = new Cellula[RIGHE][COLONNE];
     private final MenuConfigurazioni menuConfigurazioni;
     public Griglia(Configurazione configurazione) {
@@ -37,9 +37,11 @@ public class Griglia extends JFrame implements KeyListener {
         menuConfigurazioni = new MenuConfigurazioni();
         add(menuConfigurazioni, BorderLayout.EAST);
 
-        this.generaConfigurazione(configurazione,RIGHE /2,COLONNE /2);
+        if (configurazione != null)
+            this.generaConfigurazione(configurazione,RIGHE /2,COLONNE /2);
 
         this.addKeyListener(this);
+        addMouseListener(this);
         this.setFocusable(true);
         this.requestFocusInWindow(true);
 
@@ -52,33 +54,44 @@ public class Griglia extends JFrame implements KeyListener {
 
         int i2 = 0;
         int j2 = 0;
-        for (int i = riga; i < riga + configurazione.getRighe(); i++) {
-            for (int j = colonna; j < colonna + configurazione.getColonne(); j++) {
-                cellule[i][j].setStato(configurazione.getElemento(i2, j2++));
+
+        for (int i = 0; i < configurazione.getRighe(); i++) {
+
+            int rigaCorrente =
+                    riga +i >= RIGHE ? 0 : riga +i;
+
+            for (int j = 0; j < configurazione.getColonne(); j++) {
+                int colonnaCorrente =
+                        colonna +j >= COLONNE ? 0 : colonna +j;
+
+                cellule[rigaCorrente][colonnaCorrente].setStato(configurazione.getElemento(i2, j2++));
             }
             i2++;
             j2 = 0;
+
         }
+
+
         repaint();
     }
 
-    public void generaConfigurazione(JButton cellula, Configurazione configurazione) {
-        if (cellula == null) return;
-        int riga = 0;
-        int colonna = 0;
-
-        // individua cellula
-        for (int i = 0; i < RIGHE; i++) {
-            for (int j = 0; j < COLONNE; j++) {
-                if (cellule[i][j] == cellula) {
-                    riga = i;
-                    colonna = j;
-                    break;
-                }
-            }
-        }
-        generaConfigurazione(configurazione, riga, colonna);
-    }
+//    public void generaConfigurazione(JPanel cellula, Configurazione configurazione) {
+//        if (cellula == null) return;
+//        int riga = 0;
+//        int colonna = 0;
+//
+//        // individua cellula
+//        for (int i = 0; i < RIGHE; i++) {
+//            for (int j = 0; j < COLONNE; j++) {
+//                if (cellule[i][j] == cellula) {
+//                    riga = i;
+//                    colonna = j;
+//                    break;
+//                }
+//            }
+//        }
+//        generaConfigurazione(configurazione, riga, colonna);
+//    }
 
     public void prossimaGenerazione() {
         Cellula[][] nuoveCellule = new Cellula[RIGHE][COLONNE];
@@ -181,4 +194,48 @@ public class Griglia extends JFrame implements KeyListener {
         //keyReleased = called whenever a button is released
     }
 
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+        // Ottieni le coordinate del clic del mouse
+        Point clickPoint = e.getPoint();
+
+        // Itera attraverso i pannelli per trovare il pannello cliccato
+        for (int i = 0; i < RIGHE; i++) {
+            for (int j = 0; j < COLONNE; j++) {
+                Component component = cellule[i][j];
+                Rectangle bounds = component.getBounds();
+                if (bounds.contains(clickPoint)) {
+                    // System.out.println("Hai cliccato il pannello alla riga " + (i-1) + " e colonna " + j);  // TEST
+                    String nomeConfigurazione = this.getMenuConfigurazioni().getSelectedOption();
+                    if (nomeConfigurazione != null) {
+                        Configurazione configurazione = Configurazione.valueOf(nomeConfigurazione.toUpperCase().replace(' ', '_'));
+                        this.generaConfigurazione(configurazione, (i -1), j);
+                    }
+                    this.requestFocus();
+                    return;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
 }
