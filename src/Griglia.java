@@ -2,11 +2,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Griglia extends JFrame implements KeyListener, MouseListener {
+public class Griglia extends JFrame implements KeyListener {
     public static final int FRAME_WIDTH = 1200;
+    public static final int MENU_WIDTH = 400;
     public static final int FRAME_HEIGHT = 800;
-    public static final int RIGHE = 77;
-    public static final int COLONNE = 77;
+    public static final int RIGHE = 65;
+    public static final int COLONNE = 65;
     private final Cellula[][] pannelloCellule = new Cellula[RIGHE][COLONNE];
     public boolean[][] statoCellule = new boolean[RIGHE][COLONNE];
     private final MenuConfigurazioni menuConfigurazioni;
@@ -19,16 +20,16 @@ public class Griglia extends JFrame implements KeyListener, MouseListener {
         setLayout(new BorderLayout());
         JPanel gridPanel = new JPanel();
         gridPanel.setLayout(new GridLayout(RIGHE, COLONNE));
+
+        gridPanel.setPreferredSize(new Dimension(FRAME_WIDTH - MENU_WIDTH, FRAME_HEIGHT));
+
         this.addKeyListener(this);
-        addMouseListener(this);
         this.setFocusable(true);
-        this.requestFocusInWindow(true);
+        this.requestFocusInWindow();
         for (int i = 0; i < RIGHE; i++) {
             for (int j = 0; j < COLONNE; j++) {
                 pannelloCellule[i][j] = new Cellula(this, i, j);
-                pannelloCellule[i][j].setPreferredSize(new Dimension(FRAME_WIDTH /COLONNE,FRAME_HEIGHT /RIGHE));
                 gridPanel.add(pannelloCellule[i][j]);
-                // pack();
             }
         }
         add(gridPanel, BorderLayout.CENTER);
@@ -121,18 +122,6 @@ public class Griglia extends JFrame implements KeyListener, MouseListener {
         return this.menuConfigurazioni;
     }
 
-//    @Override
-//    public String toString() {
-//        String s = "";
-//        for (int i = 0; i < RIGHE; i++) {
-//            for (int j = 0; j < COLONNE; j++) {
-//                s += pannelloCellule[i][j].getStato() ? 1 : " ";
-//            }
-//            s += "\n";
-//        }
-//        return s;
-//    }
-
     @Override
     public void keyTyped(KeyEvent e) {
         //keyTyped = Invoked when a key is typed. Uses KeyChar, char output
@@ -160,48 +149,30 @@ public class Griglia extends JFrame implements KeyListener, MouseListener {
         //keyReleased = called whenever a button is released
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
+//    @Override
+//    public void mouseClicked(MouseEvent e) {
+//
+//        // Ottieni le coordinate del clic del mouse
+//        Point clickPoint = e.getPoint();
+//
+//        // Itera attraverso i pannelli per trovare il pannello cliccato
+//        for (int i = 0; i < RIGHE; i++) {
+//            for (int j = 0; j < COLONNE; j++) {
+//                Component component = pannelloCellule[i][j];
+//                Rectangle bounds = component.getBounds();
+//                if (bounds.contains(clickPoint)) {
+//                    // System.out.println("Hai cliccato il pannello alla riga " + (i-1) + " e colonna " + j);  // TEST
+//                    String nomeConfigurazione = this.getMenuConfigurazioni().getSelectedOption();
+//                    if (nomeConfigurazione != null) {
+//                        Configurazione configurazione = Configurazione.valueOf(nomeConfigurazione.toUpperCase().replace(' ', '_'));
+//                        this.generaConfigurazione(configurazione, (i -1), j);
+//                    }
+//                    this.requestFocus();
+//                    return;
+//                }
+//            }
+//        }
+//    }
 
-        // Ottieni le coordinate del clic del mouse
-        Point clickPoint = e.getPoint();
 
-        // Itera attraverso i pannelli per trovare il pannello cliccato
-        for (int i = 0; i < RIGHE; i++) {
-            for (int j = 0; j < COLONNE; j++) {
-                Component component = pannelloCellule[i][j];
-                Rectangle bounds = component.getBounds();
-                if (bounds.contains(clickPoint)) {
-                    // System.out.println("Hai cliccato il pannello alla riga " + (i-1) + " e colonna " + j);  // TEST
-                    String nomeConfigurazione = this.getMenuConfigurazioni().getSelectedOption();
-                    if (nomeConfigurazione != null) {
-                        Configurazione configurazione = Configurazione.valueOf(nomeConfigurazione.toUpperCase().replace(' ', '_'));
-                        this.generaConfigurazione(configurazione, (i -1), j);
-                    }
-                    this.requestFocus();
-                    return;
-                }
-            }
-        }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
 }
