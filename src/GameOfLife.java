@@ -2,49 +2,50 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Griglia extends JFrame implements KeyListener {
+// Singleton
+public class GameOfLife extends JFrame implements KeyListener {
+    private static GameOfLife istanza;
+    private static boolean visibile = false;
+    private static GrigliaGenerazioni grigliaGenerazioni;
     public static final int FRAME_WIDTH = 1200;
     public static final int MENU_WIDTH = 400;
-    public static final int FRAME_HEIGHT = 800;
-    public static final int RIGHE = 65;
-    public static final int COLONNE = 65;
-    private final Cellula[][] pannelloCellule = new Cellula[RIGHE][COLONNE];
-    public boolean[][] statoCellule = new boolean[RIGHE][COLONNE];
+    public static final int FRAME_HEIGHT = FRAME_WIDTH -MENU_WIDTH;
+    public boolean[][] statoCellule = new boolean[GrigliaGenerazioni.RIGHE][GrigliaGenerazioni.COLONNE];
     private final MenuConfigurazioni menuConfigurazioni;
-    public Griglia(Configurazione configurazione) {
+    private GameOfLife() {
         super("The Game of Life");
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
         setLocationRelativeTo(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
         setLayout(new BorderLayout());
-        JPanel gridPanel = new JPanel();
-        gridPanel.setLayout(new GridLayout(RIGHE, COLONNE));
 
-        gridPanel.setPreferredSize(new Dimension(FRAME_WIDTH - MENU_WIDTH, FRAME_HEIGHT));
+        grigliaGenerazioni = GrigliaGenerazioni.getInstance();
+        add(grigliaGenerazioni, BorderLayout.CENTER);
+
+        menuConfigurazioni = MenuConfigurazioni.getInstance();
+        add(menuConfigurazioni, BorderLayout.EAST);
 
         this.addKeyListener(this);
         this.setFocusable(true);
         this.requestFocusInWindow();
-        for (int i = 0; i < RIGHE; i++) {
-            for (int j = 0; j < COLONNE; j++) {
-                pannelloCellule[i][j] = new Cellula(this, i, j);
-                gridPanel.add(pannelloCellule[i][j]);
-            }
+
+        if (!visibile) {
+            visibile = true;
+            setVisible(visibile);
         }
-        add(gridPanel, BorderLayout.CENTER);
+    }
 
-        menuConfigurazioni = new MenuConfigurazioni();
-        add(menuConfigurazioni, BorderLayout.EAST);
-
-        if (configurazione != null)
-            this.generaConfigurazione(configurazione,RIGHE /2,COLONNE /2);
-
-        setVisible(true);
+    public static GameOfLife getInstance() {
+        if (istanza == null) {
+            istanza = new GameOfLife();
+        }
+        return istanza;
     }
 
     public void generaConfigurazione(Configurazione configurazione, int riga, int colonna) {
-        if (riga < 0 || riga >= RIGHE || colonna < 0 || colonna >= COLONNE) return;
+        if (riga < 0 || riga >= GrigliaGenerazioni.RIGHE || colonna < 0 || colonna >= GrigliaGenerazioni.COLONNE) return;
 
         int i2 = 0;
         int j2 = 0;
@@ -52,11 +53,11 @@ public class Griglia extends JFrame implements KeyListener {
         for (int i = 0; i < configurazione.getRighe(); i++) {
 
             int rigaCorrente =
-                    riga +i >= RIGHE ? 0 : riga +i;
+                    riga +i >= GrigliaGenerazioni.RIGHE ? 0 : riga +i;
 
-            for (int j = 0; j < configurazione.getColonne(); j++) {
+            for (int j = 0; j < configurazione.getRighe(); j++) {
                 int colonnaCorrente =
-                        colonna +j >= COLONNE ? 0 : colonna +j;
+                        colonna +j >= GrigliaGenerazioni.COLONNE ? 0 : colonna +j;
 
                 statoCellule[rigaCorrente][colonnaCorrente] = configurazione.getElemento(i2, j2++);
             }
@@ -64,22 +65,19 @@ public class Griglia extends JFrame implements KeyListener {
             j2 = 0;
 
         }
-
-        repaint();
     }
 
     public void prossimaGenerazione() {
-        boolean[][] prossimoStatoCellule = new boolean[RIGHE][COLONNE];
+        boolean[][] prossimoStatoCellule = new boolean[GrigliaGenerazioni.RIGHE][GrigliaGenerazioni.COLONNE];
 
-        for (int i = 0; i < RIGHE; i++) {
-            for (int j = 0; j < COLONNE; j++) {
+        for (int i = 0; i < GrigliaGenerazioni.RIGHE; i++) {
+            for (int j = 0; j < GrigliaGenerazioni.COLONNE; j++) {
                 prossimoStatoCellule[i][j] = calcolaProssimaGenerazioneCellula(i, j);
             }
         }
 
         statoCellule = prossimoStatoCellule;
-
-        repaint();
+        GrigliaGenerazioni.getInstance().repaint();
     }
     public boolean calcolaProssimaGenerazioneCellula(final int riga, final int colonna) {
         int celluleVive = 0;
@@ -87,13 +85,13 @@ public class Griglia extends JFrame implements KeyListener {
         for (int i = -1; i < 2; i++) {
 
             int rigaCorrente =
-                    riga +i < 0 ? RIGHE -1 :
-                            riga +i >= RIGHE ? 0 : riga +i;
+                    riga +i < 0 ? GrigliaGenerazioni.RIGHE -1 :
+                            riga +i >= GrigliaGenerazioni.RIGHE ? 0 : riga +i;
 
-            for (int j = -1; j < 2; j++) {   // colonne
+            for (int j = -1; j < 2; j++) {
                 int colonnaCorrente =
-                        colonna +j < 0 ? COLONNE -1 :
-                                colonna +j >= COLONNE ? 0 : colonna +j;
+                        colonna +j < 0 ? GrigliaGenerazioni.COLONNE -1 :
+                                colonna +j >= GrigliaGenerazioni.COLONNE ? 0 : colonna +j;
                 if (statoCellule[rigaCorrente][colonnaCorrente]) celluleVive++;
             }
 
@@ -116,10 +114,6 @@ public class Griglia extends JFrame implements KeyListener {
         }
 
         return prossimoStato;
-    }
-
-    public MenuConfigurazioni getMenuConfigurazioni() {
-        return this.menuConfigurazioni;
     }
 
     @Override
@@ -146,7 +140,7 @@ public class Griglia extends JFrame implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) {
-        //keyReleased = called whenever a button is released
+
     }
 
 //    @Override
@@ -156,8 +150,8 @@ public class Griglia extends JFrame implements KeyListener {
 //        Point clickPoint = e.getPoint();
 //
 //        // Itera attraverso i pannelli per trovare il pannello cliccato
-//        for (int i = 0; i < RIGHE; i++) {
-//            for (int j = 0; j < COLONNE; j++) {
+//        for (int i = 0; i < GrigliaGenerazioni.RIGHE; i++) {
+//            for (int j = 0; j < GrigliaGenerazioni.COLONNE; j++) {
 //                Component component = pannelloCellule[i][j];
 //                Rectangle bounds = component.getBounds();
 //                if (bounds.contains(clickPoint)) {
@@ -173,6 +167,21 @@ public class Griglia extends JFrame implements KeyListener {
 //            }
 //        }
 //    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < GrigliaGenerazioni.RIGHE; i++) {
+            for (int j = 0; j < GrigliaGenerazioni.COLONNE; j++) {
+                if (statoCellule[i][j]) sb.append('1');
+                else sb.append(' ');
+            }
+            sb.append('\n');
+        }
+
+        return sb.toString();
+    }
 
 
 }

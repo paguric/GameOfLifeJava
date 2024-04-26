@@ -1,13 +1,17 @@
 import javax.swing.*;
 import java.awt.*;
 
+// Singleton... da implementare
 public class MenuConfigurazioni extends JPanel {
+    private static MenuConfigurazioni istanza = null;
 
     private JList<String> optionList;
 
-    public MenuConfigurazioni() {
+    private MenuConfigurazioni() {
         // Imposta il layout per il pannello
         setLayout(new BorderLayout());
+
+        setPreferredSize(new Dimension(GameOfLife.MENU_WIDTH, HEIGHT));
 
         // Crea la lista delle opzioni
         optionList = new JList<>(Configurazione.valuesToString(null));
@@ -21,10 +25,17 @@ public class MenuConfigurazioni extends JPanel {
         JScrollPane scrollPane = new JScrollPane(optionList);
 
         // Imposta le preferenze dello scroll pane
-        scrollPane.setPreferredSize(new Dimension(Griglia.FRAME_WIDTH -Griglia.FRAME_HEIGHT, Griglia.FRAME_HEIGHT));
+        scrollPane.setPreferredSize(new Dimension(GameOfLife.FRAME_WIDTH - GameOfLife.FRAME_HEIGHT, GameOfLife.FRAME_HEIGHT));
 
         // Aggiungi lo scroll pane al pannello
         add(scrollPane, BorderLayout.CENTER);
+    }
+
+    public static MenuConfigurazioni getInstance() {
+        if (istanza == null) {
+            istanza = new MenuConfigurazioni();
+        }
+        return istanza;
     }
 
     // Metodo per ottenere l'opzione selezionata
