@@ -3,16 +3,25 @@ import java.awt.*;
 import java.awt.event.*;
 
 // Singleton
-public class GameOfLife extends JFrame implements KeyListener {
-    private static GameOfLife istanza;
+public class GameFrame extends JFrame implements KeyListener {
+
+    private static GameFrame istanza;
+
     private static boolean visibile = false;
+
     private static GrigliaGenerazioni grigliaGenerazioni;
+
     public static final int FRAME_WIDTH = 1200;
+
     public static final int MENU_WIDTH = 400;
+
     public static final int FRAME_HEIGHT = FRAME_WIDTH -MENU_WIDTH;
+
     public boolean[][] statoCellule = new boolean[GrigliaGenerazioni.RIGHE][GrigliaGenerazioni.COLONNE];
+
     private final MenuConfigurazioni menuConfigurazioni;
-    private GameOfLife() {
+
+    private GameFrame() {
         super("The Game of Life");
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
         setLocationRelativeTo(null);
@@ -37,29 +46,32 @@ public class GameOfLife extends JFrame implements KeyListener {
         }
     }
 
-    public static GameOfLife getInstance() {
+    public static GameFrame getInstance() {
         if (istanza == null) {
-            istanza = new GameOfLife();
+            istanza = new GameFrame();
         }
         return istanza;
     }
 
-    public void generaConfigurazione(Configurazione configurazione, int riga, int colonna) {
-        if (riga < 0 || riga >= GrigliaGenerazioni.RIGHE || colonna < 0 || colonna >= GrigliaGenerazioni.COLONNE) return;
+    public void generaConfigurazione(Configurazione c, int riga, int colonna) {
+        if (riga < 0 || riga >= GrigliaGenerazioni.RIGHE || colonna < 0 || colonna >= GrigliaGenerazioni.COLONNE)
+            return;
+
+        boolean[][] currentConfiguration = c.getConfigurationMatrix();
 
         int i2 = 0;
         int j2 = 0;
 
-        for (int i = 0; i < configurazione.getRighe(); i++) {
+        for (int i = 0; i < currentConfiguration.length; i++) {
 
             int rigaCorrente =
                     riga +i >= GrigliaGenerazioni.RIGHE ? 0 : riga +i;
 
-            for (int j = 0; j < configurazione.getRighe(); j++) {
+            for (int j = 0; j < currentConfiguration[0].length; j++) {
                 int colonnaCorrente =
                         colonna +j >= GrigliaGenerazioni.COLONNE ? 0 : colonna +j;
 
-                statoCellule[rigaCorrente][colonnaCorrente] = configurazione.getElemento(i2, j2++);
+                statoCellule[rigaCorrente][colonnaCorrente] = currentConfiguration[i2][j2++];
             }
             i2++;
             j2 = 0;

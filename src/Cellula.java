@@ -8,13 +8,13 @@ public class Cellula extends JPanel {
         this.riga = riga;
         this.colonna = colonna;
 
-        this.setPreferredSize(new Dimension(GameOfLife.FRAME_WIDTH / GrigliaGenerazioni.COLONNE, GameOfLife.FRAME_HEIGHT / GrigliaGenerazioni.RIGHE));
+        this.setPreferredSize(new Dimension(GameFrame.FRAME_WIDTH / GrigliaGenerazioni.COLONNE, GameFrame.FRAME_HEIGHT / GrigliaGenerazioni.RIGHE));
         this.setVisible(true);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        if (GameOfLife.getInstance().statoCellule[this.riga][this.colonna]) {
+        if (GameFrame.getInstance().statoCellule[this.riga][this.colonna]) {
             g.fillRect(0,0,getWidth(),getHeight());
             return;
         }

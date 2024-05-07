@@ -13,7 +13,7 @@ public class GrigliaGenerazioni extends JPanel implements MouseListener {
         super();
         setLayout(new GridLayout(RIGHE, COLONNE));
 
-        setPreferredSize(new Dimension(GameOfLife.FRAME_WIDTH -GameOfLife.MENU_WIDTH, GameOfLife.FRAME_HEIGHT));
+        setPreferredSize(new Dimension(GameFrame.FRAME_WIDTH - GameFrame.MENU_WIDTH, GameFrame.FRAME_HEIGHT));
 
         for (int i = 0; i < RIGHE; i++) {
             for (int j = 0; j < COLONNE; j++) {
@@ -48,8 +48,8 @@ public class GrigliaGenerazioni extends JPanel implements MouseListener {
                 configurazione = Configurazione.valueOf(nomeConfigurazione.toUpperCase().replace(' ', '_'));
             }
 
-            GameOfLife.getInstance().generaConfigurazione(configurazione, cellula.getRiga(), cellula.getColonna());
-            GameOfLife.getInstance().requestFocus();
+            GameFrame.getInstance().generaConfigurazione(configurazione, cellula.getRiga(), cellula.getColonna());
+            GameFrame.getInstance().requestFocus();
             repaint();
         }
     }

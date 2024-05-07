@@ -11,7 +11,7 @@ public class MenuConfigurazioni extends JPanel {
         // Imposta il layout per il pannello
         setLayout(new BorderLayout());
 
-        setPreferredSize(new Dimension(GameOfLife.MENU_WIDTH, HEIGHT));
+        setPreferredSize(new Dimension(GameFrame.MENU_WIDTH, HEIGHT));
 
         // Crea la lista delle opzioni
         optionList = new JList<>(Configurazione.valuesToString(null));
@@ -25,7 +25,7 @@ public class MenuConfigurazioni extends JPanel {
         JScrollPane scrollPane = new JScrollPane(optionList);
 
         // Imposta le preferenze dello scroll pane
-        scrollPane.setPreferredSize(new Dimension(GameOfLife.FRAME_WIDTH - GameOfLife.FRAME_HEIGHT, GameOfLife.FRAME_HEIGHT));
+        scrollPane.setPreferredSize(new Dimension(GameFrame.FRAME_WIDTH - GameFrame.FRAME_HEIGHT, GameFrame.FRAME_HEIGHT));
 
         // Aggiungi lo scroll pane al pannello
         add(scrollPane, BorderLayout.CENTER);
