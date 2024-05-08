@@ -40,7 +40,6 @@ public enum Configurazione {
         int row = 0;
         int col = 0;
 
-        System.out.println(decodedRLE);
         for (int i = 0; i < decodedRLE.length() - 1; i++) {
             char c = decodedRLE.charAt(i);
 

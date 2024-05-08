@@ -7,7 +7,9 @@ public class GameFrame extends JFrame implements KeyListener {
 
     private static GameFrame istanza;
 
-    private static boolean visibile = false;
+//    private static boolean visibile = false;
+
+    public static final String TITLE = "The Game of Life";
 
     public static final int FRAME_WIDTH = 1200;
 
@@ -18,7 +20,7 @@ public class GameFrame extends JFrame implements KeyListener {
     public boolean[][] statoCellule = new boolean[GenerationPanel.RIGHE][GenerationPanel.COLONNE];
 
     private GameFrame() {
-        super("The Game of Life");
+        super(TITLE);
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -30,10 +32,13 @@ public class GameFrame extends JFrame implements KeyListener {
         this.setFocusable(true);
         this.requestFocusInWindow();
 
-        if (!visibile) {
-            visibile = true;
-            setVisible(visibile);
-        }
+        setVisible(true);
+
+        // non so a cosa servisse questo
+//        if (!visibile) {
+//            visibile = true;
+//            setVisible(visibile);
+//        }
     }
 
     public static GameFrame getInstance() {
@@ -41,6 +46,13 @@ public class GameFrame extends JFrame implements KeyListener {
             istanza = new GameFrame();
         }
         return istanza;
+    }
+
+    public void showGamePanel() {
+        getContentPane().removeAll();
+        add(GamePanel.getInstance());
+        revalidate();
+        repaint();
     }
 
     public void generaConfigurazione(Configurazione c, int riga, int colonna) {
