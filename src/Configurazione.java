@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Collections;
 
 public enum Configurazione {
     CELLULA(1, 1, "o!",null),
@@ -34,7 +35,7 @@ public enum Configurazione {
         }
 
         boolean[][] configurationMatrix = new boolean[y][x];
-        String decodedRLE = decoderunLengthEncoding();
+        String decodedRLE = runLengthDecode();
 
         int row = 0;
         int col = 0;
@@ -58,8 +59,7 @@ public enum Configurazione {
 
     }
 
-    // GRAVE PROBLEMA: SE C'è '11' COME LUNGHEZZA, NON FUNZIONA
-    private String decoderunLengthEncoding() {
+    private String runLengthDecode() {
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < runLengthEncoding.length(); i++) {
