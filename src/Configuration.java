@@ -1,7 +1,4 @@
-import java.util.Arrays;
-import java.util.Collections;
-
-public enum Configurazione {
+public enum Configuration {
     CELLULA(1, 1, "o!",null),
     BLOCCO(2,2, "2o$2o!", Tipo.STILL_LIFE),
     BLINKER(1, 3, "o$o$o!", Tipo.STILL_LIFE),
@@ -20,7 +17,7 @@ public enum Configurazione {
 
     private final Tipo tipo;
 
-    Configurazione(int x, int y, String runLengthEncoding, Tipo tipo) {
+    Configuration(int x, int y, String runLengthEncoding, Tipo tipo) {
         this.x = x;
         this.y = y;
         this.runLengthEncoding = runLengthEncoding;
@@ -100,9 +97,9 @@ public enum Configurazione {
         return name.substring(0, 1).toUpperCase() + name.substring(1);
     }
 
-    public static String[] valuesToString(Configurazione[] configurazioneSpeciale) {
-        Configurazione[] configurazioni = values();
-        if (configurazioneSpeciale != null) configurazioni = configurazioneSpeciale;
+    public static String[] valuesToString(Configuration[] configurationSpeciale) {
+        Configuration[] configurazioni = values();
+        if (configurationSpeciale != null) configurazioni = configurationSpeciale;
         String[] valuesToString = new String[configurazioni.length];
         for (int i = 0; i < configurazioni.length; i++) {
             valuesToString[i] = configurazioni[i].toString();

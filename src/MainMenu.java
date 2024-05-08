@@ -25,7 +25,7 @@ public class MainMenu extends JPanel implements ActionListener {
     private static JButton quitButton = new JButton("Quit");
 
     private MainMenu() {
-        setPreferredSize(new Dimension(GameFrame.MENU_WIDTH, GameFrame.FRAME_HEIGHT));
+        setPreferredSize(new Dimension(GameFrame.MENU_WIDTH, GameFrame.HEIGHT));
         setLayout(new GridBagLayout());
 
         initializeComponents();
@@ -82,6 +82,7 @@ public class MainMenu extends JPanel implements ActionListener {
 
         if (e.getSource() == startButton) {
             GameFrame.getInstance().showGamePanel();
+            GenerationPanel.getInstance().setDefaultRule();
         } else if (e.getSource() == quitButton) {
             System.exit(0);
         }

@@ -14,7 +14,7 @@ public class MenuConfigurazioni extends JPanel {
         setPreferredSize(new Dimension(GameFrame.MENU_WIDTH, HEIGHT));
 
         // Crea la lista delle opzioni
-        optionList = new JList<>(Configurazione.valuesToString(null));
+        optionList = new JList<>(Configuration.valuesToString(null));
         optionList.setCellRenderer(new ListRenderer());
 
         // Imposta il font per la lista delle opzioni
@@ -25,7 +25,7 @@ public class MenuConfigurazioni extends JPanel {
         JScrollPane scrollPane = new JScrollPane(optionList);
 
         // Imposta le preferenze dello scroll pane
-        scrollPane.setPreferredSize(new Dimension(GameFrame.FRAME_WIDTH - GameFrame.FRAME_HEIGHT, GameFrame.FRAME_HEIGHT));
+        scrollPane.setPreferredSize(new Dimension(GameFrame.WIDTH - GameFrame.HEIGHT, GameFrame.HEIGHT));
 
         // Aggiungi lo scroll pane al pannello
         add(scrollPane, BorderLayout.CENTER);
