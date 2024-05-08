@@ -9,17 +9,13 @@ public class GameFrame extends JFrame implements KeyListener {
 
     private static boolean visibile = false;
 
-    private static GrigliaGenerazioni grigliaGenerazioni;
-
     public static final int FRAME_WIDTH = 1200;
 
     public static final int MENU_WIDTH = 400;
 
     public static final int FRAME_HEIGHT = FRAME_WIDTH -MENU_WIDTH;
 
-    public boolean[][] statoCellule = new boolean[GrigliaGenerazioni.RIGHE][GrigliaGenerazioni.COLONNE];
-
-    private final MenuConfigurazioni menuConfigurazioni;
+    public boolean[][] statoCellule = new boolean[GenerationPanel.RIGHE][GenerationPanel.COLONNE];
 
     private GameFrame() {
         super("The Game of Life");
@@ -27,14 +23,8 @@ public class GameFrame extends JFrame implements KeyListener {
         setLocationRelativeTo(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        setLayout(new BorderLayout());
 
-        grigliaGenerazioni = GrigliaGenerazioni.getInstance();
-        add(grigliaGenerazioni, BorderLayout.CENTER);
-
-        menuConfigurazioni = MenuConfigurazioni.getInstance();
-        add(menuConfigurazioni, BorderLayout.EAST);
+        add(MainMenu.getInstance());
 
         this.addKeyListener(this);
         this.setFocusable(true);
@@ -54,7 +44,7 @@ public class GameFrame extends JFrame implements KeyListener {
     }
 
     public void generaConfigurazione(Configurazione c, int riga, int colonna) {
-        if (riga < 0 || riga >= GrigliaGenerazioni.RIGHE || colonna < 0 || colonna >= GrigliaGenerazioni.COLONNE)
+        if (riga < 0 || riga >= GenerationPanel.RIGHE || colonna < 0 || colonna >= GenerationPanel.COLONNE)
             return;
 
         boolean[][] currentConfiguration = c.getConfigurationMatrix();
@@ -65,11 +55,11 @@ public class GameFrame extends JFrame implements KeyListener {
         for (int i = 0; i < currentConfiguration.length; i++) {
 
             int rigaCorrente =
-                    riga +i >= GrigliaGenerazioni.RIGHE ? 0 : riga +i;
+                    riga +i >= GenerationPanel.RIGHE ? 0 : riga +i;
 
             for (int j = 0; j < currentConfiguration[0].length; j++) {
                 int colonnaCorrente =
-                        colonna +j >= GrigliaGenerazioni.COLONNE ? 0 : colonna +j;
+                        colonna +j >= GenerationPanel.COLONNE ? 0 : colonna +j;
 
                 statoCellule[rigaCorrente][colonnaCorrente] = currentConfiguration[i2][j2++];
             }
@@ -80,16 +70,16 @@ public class GameFrame extends JFrame implements KeyListener {
     }
 
     public void prossimaGenerazione() {
-        boolean[][] prossimoStatoCellule = new boolean[GrigliaGenerazioni.RIGHE][GrigliaGenerazioni.COLONNE];
+        boolean[][] prossimoStatoCellule = new boolean[GenerationPanel.RIGHE][GenerationPanel.COLONNE];
 
-        for (int i = 0; i < GrigliaGenerazioni.RIGHE; i++) {
-            for (int j = 0; j < GrigliaGenerazioni.COLONNE; j++) {
+        for (int i = 0; i < GenerationPanel.RIGHE; i++) {
+            for (int j = 0; j < GenerationPanel.COLONNE; j++) {
                 prossimoStatoCellule[i][j] = calcolaProssimaGenerazioneCellula(i, j);
             }
         }
 
         statoCellule = prossimoStatoCellule;
-        GrigliaGenerazioni.getInstance().repaint();
+        GenerationPanel.getInstance().repaint();
     }
     public boolean calcolaProssimaGenerazioneCellula(final int riga, final int colonna) {
         int celluleVive = 0;
@@ -97,13 +87,13 @@ public class GameFrame extends JFrame implements KeyListener {
         for (int i = -1; i < 2; i++) {
 
             int rigaCorrente =
-                    riga +i < 0 ? GrigliaGenerazioni.RIGHE -1 :
-                            riga +i >= GrigliaGenerazioni.RIGHE ? 0 : riga +i;
+                    riga +i < 0 ? GenerationPanel.RIGHE -1 :
+                            riga +i >= GenerationPanel.RIGHE ? 0 : riga +i;
 
             for (int j = -1; j < 2; j++) {
                 int colonnaCorrente =
-                        colonna +j < 0 ? GrigliaGenerazioni.COLONNE -1 :
-                                colonna +j >= GrigliaGenerazioni.COLONNE ? 0 : colonna +j;
+                        colonna +j < 0 ? GenerationPanel.COLONNE -1 :
+                                colonna +j >= GenerationPanel.COLONNE ? 0 : colonna +j;
                 if (statoCellule[rigaCorrente][colonnaCorrente]) celluleVive++;
             }
 
@@ -184,8 +174,8 @@ public class GameFrame extends JFrame implements KeyListener {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < GrigliaGenerazioni.RIGHE; i++) {
-            for (int j = 0; j < GrigliaGenerazioni.COLONNE; j++) {
+        for (int i = 0; i < GenerationPanel.RIGHE; i++) {
+            for (int j = 0; j < GenerationPanel.COLONNE; j++) {
                 if (statoCellule[i][j]) sb.append('1');
                 else sb.append(' ');
             }

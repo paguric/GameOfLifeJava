@@ -4,12 +4,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 // Singleton
-public class GrigliaGenerazioni extends JPanel implements MouseListener {
-    private static GrigliaGenerazioni istanza;
+public class GenerationPanel extends JPanel implements MouseListener {
+    private static GenerationPanel istanza;
     public static final int RIGHE = 77;
     public static final int COLONNE = 77;
     private static Cellula[][] cellule = new Cellula[RIGHE][COLONNE];
-    private GrigliaGenerazioni() {
+    private GenerationPanel() {
         super();
         setLayout(new GridLayout(RIGHE, COLONNE));
 
@@ -28,9 +28,9 @@ public class GrigliaGenerazioni extends JPanel implements MouseListener {
         setVisible(true);
     }
 
-    public static GrigliaGenerazioni getInstance() {
+    public static GenerationPanel getInstance() {
         if (istanza == null) {
-            istanza = new GrigliaGenerazioni();
+            istanza = new GenerationPanel();
         }
         return istanza;
     }

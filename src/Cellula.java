@@ -8,7 +8,7 @@ public class Cellula extends JPanel {
         this.riga = riga;
         this.colonna = colonna;
 
-        this.setPreferredSize(new Dimension(GameFrame.FRAME_WIDTH / GrigliaGenerazioni.COLONNE, GameFrame.FRAME_HEIGHT / GrigliaGenerazioni.RIGHE));
+        this.setPreferredSize(new Dimension(GameFrame.FRAME_WIDTH / GenerationPanel.COLONNE, GameFrame.FRAME_HEIGHT / GenerationPanel.RIGHE));
         this.setVisible(true);
     }
 
