@@ -1,7 +1,11 @@
+import java.util.Arrays;
+
 public enum Configuration {
     CELLULA(1, 1, "o!",null),
     BLOCCO(2,2, "2o$2o!", Tipo.STILL_LIFE),
     BLINKER(1, 3, "o$o$o!", Tipo.STILL_LIFE),
+    GLIDER(3, 3, "bob$2bo$3o!", Tipo.STILL_LIFE),
+    PENTADECATHLON(3, 10, "bo$bo$obo$bo$bo$bo$bo$obo$bo$bo!", Tipo.STILL_LIFE),
     SCHICK_ENGINE(9,15,"3o3b3o$o2bobo2bo$o7bo$o7bo$bobobobo2$4bo$3b3o$2b2ob2o$3b3o$3b3o$3b3o$3bobo$3bobo$4bo!", Tipo.SPACESHIP),
     CLOVERLEAF_INTERCHANGE(13,13,"4bo3bo$3bobobobo$3bobobobo$b2o2bobo2b2o$o4bobo4bo$b4o3b4o2$b4o3b4o$o4bobo4bo$b2o2bobo2b2o$3bobobobo$3bobobobo$4bo3bo!", Tipo.STILL_LIFE),
     LINEAR_GROWTH_TEST(16,16,"boboobbobobboooo$boobbboboooooooo$oobobobbbboboobb$booobobobboboobo$oboobobobboobbbb$oobooobbbboboboo$obobobooobbbobbo$oboobbooooobbobb$ooooooobobbobobb$booboooooooooobo$ooooobbbobboobbo$ooboooooobobobob$boboboobbbobbbbo$oobboooboobobobb$bbbobbooobboobob$bbooobooobbooboo!", null),
@@ -13,7 +17,7 @@ public enum Configuration {
 
     private final String runLengthEncoding;
 
-    private final boolean[][] configurationMatrix;
+    private final byte[] configuration;
 
     private final Tipo tipo;
 
@@ -21,48 +25,43 @@ public enum Configuration {
         this.x = x;
         this.y = y;
         this.runLengthEncoding = runLengthEncoding;
-        configurationMatrix = computeConfigurationMatrix();
+        configuration = computeConfiguration();
         this.tipo = tipo;
 
     }
 
-    private boolean[][] computeConfigurationMatrix() {
+    private byte[] computeConfiguration() {
         if (runLengthEncoding == null) {
             return null;
         }
 
-        boolean[][] configurationMatrix = new boolean[y][x];
+        byte[] configuration = new byte[y * x];
         String decodedRLE = runLengthDecode();
 
-        int row = 0;
-        int col = 0;
+        int configurationCounter = 0;
 
-        for (int i = 0; i < decodedRLE.length() - 1; i++) {
+        for (int i = 0; i < decodedRLE.length(); i++) {
             char c = decodedRLE.charAt(i);
 
-            if (c == '$') {
-                row++;
-                col = 0;
-                continue;
-
-            }
-
-            configurationMatrix[row][col++] = c == 'o';
-
+            if (c == 'o')
+                configuration[configurationCounter] = 0x01;
+            configurationCounter++;
         }
 
-        return configurationMatrix;
-
+        return configuration;
     }
 
     private String runLengthDecode() {
         StringBuilder sb = new StringBuilder();
+
+        int currentLineLength = 0;
 
         for (int i = 0; i < runLengthEncoding.length(); i++) {
             char c = runLengthEncoding.charAt(i);
 
             if (c == 'b' || c == 'o') {
                 sb.append(c);
+                currentLineLength++;
 
             } else if (Character.isDigit(c)) {
                 int num = Character.getNumericValue(c);
@@ -74,11 +73,16 @@ public enum Configuration {
 
                 for (int j = 0; j < num; j++) {
                     sb.append(runLengthEncoding.charAt(i + 1));
+                    currentLineLength++;
                 }
 
                 i++;
             } else {
-                sb.append(c);
+                if (currentLineLength < x) {
+//                    sb.append(String.valueOf(runLengthEncoding.charAt(i - 1)).repeat(Math.max(0, x - currentLineLength)));
+                    sb.append(String.valueOf('b').repeat(Math.max(0, x - currentLineLength)));
+                }
+                currentLineLength = 0;
             }
 
         }
@@ -87,8 +91,16 @@ public enum Configuration {
 
     }
 
-    public boolean[][] getConfigurationMatrix() {
-        return configurationMatrix;
+    public byte[] getConfiguration() {
+        return configuration;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     @Override

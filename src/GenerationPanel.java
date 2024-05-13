@@ -13,15 +13,15 @@ public class GenerationPanel extends JPanel implements MouseListener {
     
     public static final int HEIGHT = GameFrame.HEIGHT;
     
-    public static final int ROWS = 200;
+    public static final int ROWS = 33;
     
-    public static final int COLS = 200;
+    public static final int COLS = 33;
 
     private static List<Integer> b = new ArrayList<>();   // born: a new cell is born if it has b neighbours
 
     private static List<Integer> s = new ArrayList<>();   // survive: a cell survives if it has s neighbours
     
-    public boolean[][] cells = new boolean[ROWS][COLS];
+    public byte[] cells = new byte[ROWS * COLS];
 
 
     private GenerationPanel() {
@@ -64,28 +64,19 @@ public class GenerationPanel extends JPanel implements MouseListener {
     }
 
     public void spawnConfiguration(Configuration c, int row, int col) {
-        if (row < 0 || row >= ROWS || col < 0 || col >= COLS)
+        byte[] configuration = c.getConfiguration();
+        if (row * col > ROWS * COLS || row * col + configuration.length > ROWS * COLS)
             return;
 
-        boolean[][] configurationMatrix = c.getConfigurationMatrix();
+        // copy first row, then skips to next row
+        int configurationCounter = 0;
+        int cellsCounter = row * ROWS + col;
 
-        int i2 = 0;
-        int j2 = 0;
-
-        for (int i = 0; i < configurationMatrix.length; i++) {
-
-            int currentRow =
-                    row +i >= ROWS ? 0 : row + i;
-
-            for (int j = 0; j < configurationMatrix[0].length; j++) {
-                int currentCol =
-                        col +j >= COLS ? 0 : col + j;
-
-                cells[currentRow][currentCol] = configurationMatrix[i2][j2++];
+        for (int i = 0; i < c.getY(); i++) {
+            for (int j = 0; j < c.getX(); j++) {
+                cells[cellsCounter++] = (byte) (cells[i] | configuration[configurationCounter++]);
             }
-            i2++;
-            j2 = 0;
-
+            cellsCounter += (COLS - c.getX());
         }
 
     }
@@ -95,15 +86,15 @@ public class GenerationPanel extends JPanel implements MouseListener {
 
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
-                nextCells[i][j] = computeCellsNextStatus(i, j);
+                computeCellsNextState(i, j);
             }
         }
 
-        cells = nextCells;
+//        cells = nextCells;
 
     }
 
-    public boolean computeCellsNextStatus(final int row, final int col) {
+    public void computeCellsNextState(final int row, final int col) {
         int neighbours = 0;
 
         for (int i = -1; i < 2; i++) {
@@ -121,7 +112,7 @@ public class GenerationPanel extends JPanel implements MouseListener {
                         col +j < 0 ? ROWS -1 :
                                 col +j >= COLS ? 0 : col +j;
 
-                if (cells[currentRow][currentCol])
+//                if (cells[currentRow][currentCol])
                     neighbours++;
 
             }
@@ -130,21 +121,21 @@ public class GenerationPanel extends JPanel implements MouseListener {
 
         boolean nextState = false;
 
-        if (cells[row][col]) {
-
-            if (s.contains(neighbours)) {
-                nextState = true;
-
-            }
-
-        } else {
-
-            if (b.contains(neighbours)) {
-                nextState = true;
-
-            }
-
-        }
+//        if (cells[row][col]) {
+//
+//            if (s.contains(neighbours)) {
+//                nextState = true;
+//
+//            }
+//
+//        } else {
+//
+//            if (b.contains(neighbours)) {
+//                nextState = true;
+//
+//            }
+//
+//        }
 
         return nextState;
     }
@@ -156,19 +147,19 @@ public class GenerationPanel extends JPanel implements MouseListener {
         int cellWidth = WIDTH / COLS;
         int cellHeight = HEIGHT / ROWS;
 
+        int cellCounter = 0;
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
-
-                if (cells[i][j]) {
+                if ((cells[cellCounter++] & 0x01) == 1) {
                     g.setColor(Color.BLACK);
-                    g.fillRect(j * cellWidth, i * cellHeight, cellWidth, cellHeight);
                 } else {
                     g.setColor(Color.WHITE);
-                    g.fillRect(j * cellWidth, i * cellHeight, cellWidth, cellHeight);
                 }
+                g.fillRect(j * cellWidth, i * cellHeight, cellWidth, cellHeight);
 
             }
         }
+
     }
 
 
