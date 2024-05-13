@@ -43,8 +43,49 @@ public class GenerationPanel extends JPanel implements MouseListener {
         return instance;
     }
 
-    private void setPadding() {
+    private byte[][] getPadding() {
+        byte[][] cellsWithPadding = new byte[ROWS + 2][COLS + 2];
 
+        // upper left corner
+        cellsWithPadding[0][0] = cells[ROWS - 1][COLS - 1];
+
+        // upper right corner
+        cellsWithPadding[0][COLS + 1] = cells[ROWS - 1][0];
+
+        // lower left corner
+        cellsWithPadding[ROWS + 1][0] = cells[0][COLS - 1];
+
+        // lower right corner
+        cellsWithPadding[ROWS + 1][COLS + 1] = cells[0][0];
+
+        // upper row
+        for (int i = 0; i < COLS - 1; i++) {
+            cellsWithPadding[0][i] = cells[ROWS - 1][i];
+        }
+
+        // lower row
+        for (int i = 0; i < COLS - 1; i++) {
+            cellsWithPadding[ROWS + 1][i] = cells[0][i];
+        }
+
+        // left col
+        for (int i = 1; i < ROWS - 1; i++) {
+            cellsWithPadding[i][0] = cells[i][COLS - 1];
+        }
+
+        // right col
+        for (int i = 1; i < ROWS - 1; i++) {
+            cellsWithPadding[i][COLS + 1] = cells[i][0];
+        }
+
+        // center
+        for (int i = 1; i < ROWS - 1; i++) {
+            for (int j = 1; j < COLS - 1; j++) {
+                cellsWithPadding[i][j] = cells[i - 1][j - 1];
+            }
+        }
+
+        return cellsWithPadding;
     }
 
     public boolean setRule(List<Integer> b, List<Integer> s) {
@@ -75,67 +116,57 @@ public class GenerationPanel extends JPanel implements MouseListener {
 
         for (int i = 0; i < c.getY(); i++) {
             for (int j = 0; j < c.getX(); j++) {
-                cells[row + i][col + j] = configuration[i][j];
+                int nextRow = (row + i) % ROWS;
+                int nextCol = (col + j) % COLS;
+                cells[nextRow][nextCol] = configuration[i][j];
             }
         }
 
     }
 
     public void computeNextGeneration() {
-        boolean[][] nextCells = new boolean[ROWS][COLS];
-
+        byte[][] nextGeneration = new byte[ROWS][COLS];
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
-                computeCellsNextState(i, j);
+                nextGeneration[i][j] = computeCellsNextState(i, j);
             }
         }
-
-//        cells = nextCells;
-
+        cells = nextGeneration;
     }
 
-    public void computeCellsNextState(final int row, final int col) {
+    public byte computeCellsNextState(final int row, final int col) {
+        byte[][] padding = getPadding();
         int neighbours = 0;
 
         for (int i = -1; i < 2; i++) {
-
-            int currentRow =
-                    row +i < 0 ? ROWS -1 :
-                            row +i >= COLS ? 0 : row +i;
-
             for (int j = -1; j < 2; j++) {
 
                 if (i == 0 && j == 0)
                     continue; // skip the cell itself
 
-                int currentCol =
-                        col +j < 0 ? ROWS -1 :
-                                col +j >= COLS ? 0 : col +j;
-
-//                if (cells[currentRow][currentCol])
+                if ((padding[i + row + 1][j + col + 1] & 0x01) == 1)
                     neighbours++;
 
             }
 
         }
 
-        boolean nextState = false;
+        if ((cells[row][col] & 0x01) == 1) {
 
-//        if (cells[row][col]) {
-//
-//            if (s.contains(neighbours)) {
-//                nextState = true;
-//
-//            }
-//
-//        } else {
-//
-//            if (b.contains(neighbours)) {
-//                nextState = true;
-//
-//            }
-//
-//        }
+            if (!s.contains(neighbours)) {
+                return 0x00;
+
+            }
+
+        } else {
+
+            if (b.contains(neighbours)) {
+                return 0x01;
+
+            }
+
+        }
+        return cells[row][col];
 
     }
 
