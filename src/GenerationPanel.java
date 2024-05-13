@@ -21,7 +21,7 @@ public class GenerationPanel extends JPanel implements MouseListener {
 
     private static List<Integer> s = new ArrayList<>();   // survive: a cell survives if it has s neighbours
     
-    public byte[] cells = new byte[ROWS * COLS];
+    public byte[][] cells = new byte[ROWS][COLS];
 
 
     private GenerationPanel() {
@@ -41,6 +41,10 @@ public class GenerationPanel extends JPanel implements MouseListener {
             instance = new GenerationPanel();
         }
         return instance;
+    }
+
+    private void setPadding() {
+
     }
 
     public boolean setRule(List<Integer> b, List<Integer> s) {
@@ -64,19 +68,15 @@ public class GenerationPanel extends JPanel implements MouseListener {
     }
 
     public void spawnConfiguration(Configuration c, int row, int col) {
-        byte[] configuration = c.getConfiguration();
-        if (row * col > ROWS * COLS || row * col + configuration.length > ROWS * COLS)
+        if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
             return;
-
-        // copy first row, then skips to next row
-        int configurationCounter = 0;
-        int cellsCounter = row * ROWS + col;
+        }
+        byte[][] configuration = c.getConfiguration();
 
         for (int i = 0; i < c.getY(); i++) {
             for (int j = 0; j < c.getX(); j++) {
-                cells[cellsCounter++] = (byte) (cells[i] | configuration[configurationCounter++]);
+                cells[row + i][col + j] = configuration[i][j];
             }
-            cellsCounter += (COLS - c.getX());
         }
 
     }
@@ -137,7 +137,6 @@ public class GenerationPanel extends JPanel implements MouseListener {
 //
 //        }
 
-        return nextState;
     }
 
     @Override
@@ -147,10 +146,9 @@ public class GenerationPanel extends JPanel implements MouseListener {
         int cellWidth = WIDTH / COLS;
         int cellHeight = HEIGHT / ROWS;
 
-        int cellCounter = 0;
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
-                if ((cells[cellCounter++] & 0x01) == 1) {
+                if ((cells[i][j] & 0x01) == 1) {
                     g.setColor(Color.BLACK);
                 } else {
                     g.setColor(Color.WHITE);

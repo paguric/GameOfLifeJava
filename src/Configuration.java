@@ -5,11 +5,7 @@ public enum Configuration {
     BLOCCO(2,2, "2o$2o!", Tipo.STILL_LIFE),
     BLINKER(1, 3, "o$o$o!", Tipo.STILL_LIFE),
     GLIDER(3, 3, "bob$2bo$3o!", Tipo.STILL_LIFE),
-    PENTADECATHLON(3, 10, "bo$bo$obo$bo$bo$bo$bo$obo$bo$bo!", Tipo.STILL_LIFE),
-    SCHICK_ENGINE(9,15,"3o3b3o$o2bobo2bo$o7bo$o7bo$bobobobo2$4bo$3b3o$2b2ob2o$3b3o$3b3o$3b3o$3bobo$3bobo$4bo!", Tipo.SPACESHIP),
-    CLOVERLEAF_INTERCHANGE(13,13,"4bo3bo$3bobobobo$3bobobobo$b2o2bobo2b2o$o4bobo4bo$b4o3b4o2$b4o3b4o$o4bobo4bo$b2o2bobo2b2o$3bobobobo$3bobobobo$4bo3bo!", Tipo.STILL_LIFE),
-    LINEAR_GROWTH_TEST(16,16,"boboobbobobboooo$boobbboboooooooo$oobobobbbboboobb$booobobobboboobo$oboobobobboobbbb$oobooobbbboboboo$obobobooobbbobbo$oboobbooooobbobb$ooooooobobbobobb$booboooooooooobo$ooooobbbobboobbo$ooboooooobobobob$boboboobbbobbbbo$oobboooboobobobb$bbbobbooobboobob$bbooobooobbooboo!", null),
-    GOSPER_GLIDER_GUN(47,14,  "16bo30b$16bobo16bo11b$16b2o17bobo9b$obo10bo21b2o10b$b2o11b2o31b$bo11b2o32b3$10b2o20b2o13b$11b2o19bobo9b3o$10bo21bo11bo2b$27bo17bob$27b2o18b$26bobo!", Tipo.GUN);
+    PENTADECATHLON(3, 10, "bo$bo$obo$bo$bo$bo$bo$obo$bo$bo!", Tipo.STILL_LIFE);
 
     private final int x;
 
@@ -17,7 +13,7 @@ public enum Configuration {
 
     private final String runLengthEncoding;
 
-    private final byte[] configuration;
+    private final byte[][] configuration;
 
     private final Tipo tipo;
 
@@ -30,22 +26,23 @@ public enum Configuration {
 
     }
 
-    private byte[] computeConfiguration() {
+    private byte[][] computeConfiguration() {
         if (runLengthEncoding == null) {
             return null;
         }
 
-        byte[] configuration = new byte[y * x];
+        byte[][] configuration = new byte[y][x];
         String decodedRLE = runLengthDecode();
-
         int configurationCounter = 0;
 
-        for (int i = 0; i < decodedRLE.length(); i++) {
-            char c = decodedRLE.charAt(i);
+        for (int i = 0; i < y; i++) {
+            for (int j = 0; j < x; j++) {
+                if ((decodedRLE.charAt(configurationCounter) == 'o')) {
+                    configuration[i][j] += 0x01;
+                }
 
-            if (c == 'o')
-                configuration[configurationCounter] = 0x01;
-            configurationCounter++;
+                configurationCounter++;
+            }
         }
 
         return configuration;
@@ -91,7 +88,7 @@ public enum Configuration {
 
     }
 
-    public byte[] getConfiguration() {
+    public byte[][] getConfiguration() {
         return configuration;
     }
 
